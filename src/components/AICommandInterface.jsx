@@ -10,6 +10,7 @@ import {
   HiOutlineExclamation,
   HiOutlineLightBulb,
 } from 'react-icons/hi';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const EXAMPLE_COMMANDS = [
   'Create habit Morning Yoga',
@@ -44,15 +45,12 @@ export default function AICommandInterface() {
     setProcessing(true);
 
     try {
-      // Step 1: Parse command
       const parsed = await parseAICommand(trimmed);
       setHistory((h) => [...h, { type: 'parsed', data: parsed }]);
 
-      // Step 2: Execute action
       const result = await executeAIAction(parsed);
       setHistory((h) => [...h, { type: 'result', data: result }]);
 
-      // Step 3: Refresh stores
       await Promise.all([fetchHabits(), fetchTasks()]);
     } catch (err) {
       setHistory((h) => [...h, { type: 'error', text: err.message }]);
@@ -68,128 +66,133 @@ export default function AICommandInterface() {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div>
-        <h2 className="text-2xl font-bold text-white">AI Command Interface</h2>
-        <p className="text-surface-500 mt-1 text-sm">Use natural language to manage your productivity</p>
+    <div className="flex flex-col h-[calc(100vh-200px)] gap-6 animate-fade-in max-w-4xl mx-auto">
+      {/* Suggestions */}
+      <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none shrink-0" style={{ scrollbarWidth: 'none' }}>
+        <div className="flex items-center gap-2 text-surface-400 bg-surface-900/50 backdrop-blur-md px-4 py-2 rounded-full border border-white/5">
+          <HiOutlineLightBulb className="w-4 h-4 text-amber-400 shrink-0" />
+          <span className="text-xs font-bold uppercase tracking-wider whitespace-nowrap">Try:</span>
+        </div>
+        {EXAMPLE_COMMANDS.map((cmd) => (
+          <button
+            key={cmd}
+            onClick={() => handleExample(cmd)}
+            className="px-4 py-2 rounded-full bg-surface-800/50 border border-white/5 text-xs text-surface-200 font-medium whitespace-nowrap
+              hover:bg-brand-500/10 hover:text-brand-300 hover:border-brand-500/30 transition-all duration-300"
+          >
+            {cmd}
+          </button>
+        ))}
       </div>
 
-      {/* Example commands */}
-      <div className="glass-card p-4">
-        <div className="flex items-center gap-2 mb-3">
-          <HiOutlineLightBulb className="w-4 h-4 text-amber-400" />
-          <span className="text-xs font-semibold text-surface-400 uppercase tracking-wider">Try these commands</span>
+      {/* Terminal View */}
+      <div className="flex-1 glass-panel flex flex-col relative overflow-hidden shadow-2xl">
+        <div className="p-4 border-b border-white/5 bg-surface-900/50 flex items-center gap-3 shrink-0">
+          <HiOutlineTerminal className="w-5 h-5 text-brand-400" />
+          <span className="font-display font-bold text-sm tracking-widest uppercase text-white">JAY Assistant Terminal</span>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {EXAMPLE_COMMANDS.map((cmd) => (
+        
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          {history.length === 0 ? (
+            <div className="h-full flex flex-col items-center justify-center opacity-50">
+              <HiOutlineSparkles className="w-16 h-16 mb-4 text-brand-500" />
+              <p className="text-surface-300 font-medium">System ready for input.</p>
+            </div>
+          ) : (
+            <AnimatePresence>
+              {history.map((entry, i) => (
+                <motion.div 
+                  key={i} 
+                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                  className="flex flex-col gap-2"
+                >
+                  {entry.type === 'user' && (
+                    <div className="self-end max-w-[80%] bg-surface-800 text-white px-5 py-3 rounded-2xl rounded-tr-none border border-white/10 shadow-lg">
+                      <p className="text-sm font-medium leading-relaxed">{entry.text}</p>
+                    </div>
+                  )}
+                  {entry.type === 'parsed' && (
+                    <div className="self-start max-w-[80%] flex items-start gap-3 mt-2">
+                      <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center shrink-0 mt-1 border border-indigo-500/30">
+                        <HiOutlineSparkles className="w-4 h-4 text-indigo-400" />
+                      </div>
+                      <div className="bg-surface-900/50 backdrop-blur-sm border border-white/5 px-5 py-3 rounded-2xl rounded-tl-none">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-surface-500 mb-2">Intent Parsed</p>
+                        <pre className="text-xs font-mono text-indigo-200 overflow-x-auto">
+                          {JSON.stringify(entry.data, null, 2)}
+                        </pre>
+                      </div>
+                    </div>
+                  )}
+                  {entry.type === 'result' && (
+                    <div className="self-start max-w-[80%] flex items-start gap-3 mt-1">
+                      <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0 mt-1 border border-emerald-500/30">
+                        <HiOutlineCheck className="w-4 h-4 text-emerald-400" />
+                      </div>
+                      <div className="bg-surface-900/50 backdrop-blur-sm border border-white/5 px-5 py-3 rounded-2xl rounded-tl-none">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-500/70 mb-2">Execution Success</p>
+                        <pre className="text-xs font-mono text-emerald-200/90 overflow-x-auto">
+                          {JSON.stringify(entry.data.result, null, 2)}
+                        </pre>
+                      </div>
+                    </div>
+                  )}
+                  {entry.type === 'error' && (
+                    <div className="self-start max-w-[80%] flex items-start gap-3 mt-2">
+                      <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center shrink-0 mt-1 border border-red-500/30">
+                        <HiOutlineExclamation className="w-4 h-4 text-red-400" />
+                      </div>
+                      <div className="bg-surface-900/50 backdrop-blur-sm border border-red-500/20 px-5 py-3 rounded-2xl rounded-tl-none">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-red-500/70 mb-1">Execution Failed</p>
+                        <p className="text-sm font-medium text-red-300">{entry.text}</p>
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+              {processing && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-start gap-3 mt-2">
+                  <div className="w-8 h-8 rounded-full bg-brand-500/20 border border-brand-500/30 flex items-center justify-center shrink-0 mt-1 animate-pulse">
+                    <HiOutlineSparkles className="w-4 h-4 text-brand-400" />
+                  </div>
+                  <div className="px-5 py-4">
+                    <div className="flex gap-1.5">
+                      <div className="w-2 h-2 rounded-full bg-brand-500/50 animate-bounce" style={{ animationDelay: '0ms' }} />
+                      <div className="w-2 h-2 rounded-full bg-brand-500/50 animate-bounce" style={{ animationDelay: '150ms' }} />
+                      <div className="w-2 h-2 rounded-full bg-brand-500/50 animate-bounce" style={{ animationDelay: '300ms' }} />
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          )}
+          <div ref={bottomRef} />
+        </div>
+
+        {/* Input Bar */}
+        <form onSubmit={handleSubmit} className="p-4 border-t border-white/5 bg-surface-900/50 shrink-0">
+          <div className="relative flex items-center">
+            <input
+              id="ai-command-input"
+              ref={inputRef}
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Command JAY Assistant..."
+              className="neo-input pr-16 text-lg py-4 shadow-glass"
+              disabled={processing}
+            />
             <button
-              key={cmd}
-              onClick={() => handleExample(cmd)}
-              className="px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-xs text-surface-400
-                hover:bg-white/[0.08] hover:text-white transition-all duration-200"
+              id="ai-submit-btn"
+              type="submit"
+              disabled={processing || !input.trim()}
+              className="absolute right-2 top-2 bottom-2 aspect-square rounded-xl bg-brand-500 text-surface-950 flex items-center justify-center transition-all duration-300 hover:bg-brand-400 hover:shadow-glow-brand disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none"
             >
-              {cmd}
+              <HiOutlinePaperAirplane className="w-5 h-5 rotate-90 translate-x-[2px] translate-y-[1px]" />
             </button>
-          ))}
-        </div>
-      </div>
-
-      {/* History */}
-      <div className="glass-card p-4 min-h-[300px] max-h-[500px] overflow-y-auto space-y-3">
-        {history.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-brand-500/10 flex items-center justify-center mb-4">
-              <HiOutlineTerminal className="w-8 h-8 text-brand-400" />
-            </div>
-            <h3 className="text-lg font-semibold text-white mb-2">Ready for commands</h3>
-            <p className="text-surface-500 text-sm max-w-sm">
-              Type a natural language command below or click one of the examples above
-            </p>
           </div>
-        ) : (
-          history.map((entry, i) => (
-            <div key={i} className="animate-slide-up">
-              {entry.type === 'user' && (
-                <div className="flex gap-3 items-start">
-                  <div className="w-7 h-7 rounded-lg bg-brand-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-xs font-bold text-brand-400">You</span>
-                  </div>
-                  <p className="text-sm text-white font-medium pt-1">{entry.text}</p>
-                </div>
-              )}
-              {entry.type === 'parsed' && (
-                <div className="flex gap-3 items-start ml-10">
-                  <div className="w-7 h-7 rounded-lg bg-indigo-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <HiOutlineSparkles className="w-3.5 h-3.5 text-indigo-400" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs text-surface-500 mb-1">Parsed Action</p>
-                    <pre className="text-xs font-mono bg-white/[0.03] border border-white/[0.06] rounded-lg p-3 text-surface-300 overflow-x-auto">
-                      {JSON.stringify(entry.data, null, 2)}
-                    </pre>
-                  </div>
-                </div>
-              )}
-              {entry.type === 'result' && (
-                <div className="flex gap-3 items-start ml-10">
-                  <div className="w-7 h-7 rounded-lg bg-emerald-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <HiOutlineCheck className="w-3.5 h-3.5 text-emerald-400" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs text-emerald-400 mb-1 font-medium">✓ Action Executed</p>
-                    <pre className="text-xs font-mono bg-emerald-500/5 border border-emerald-500/10 rounded-lg p-3 text-surface-300 overflow-x-auto">
-                      {JSON.stringify(entry.data.result, null, 2)}
-                    </pre>
-                  </div>
-                </div>
-              )}
-              {entry.type === 'error' && (
-                <div className="flex gap-3 items-start ml-10">
-                  <div className="w-7 h-7 rounded-lg bg-red-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <HiOutlineExclamation className="w-3.5 h-3.5 text-red-400" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-red-400 mb-1 font-medium">Error</p>
-                    <p className="text-sm text-red-300">{entry.text}</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))
-        )}
-        {processing && (
-          <div className="flex gap-3 items-center ml-10 animate-pulse-soft">
-            <div className="w-7 h-7 rounded-lg bg-brand-500/20 flex items-center justify-center">
-              <HiOutlineSparkles className="w-3.5 h-3.5 text-brand-400" />
-            </div>
-            <p className="text-sm text-surface-500">Processing...</p>
-          </div>
-        )}
-        <div ref={bottomRef} />
+        </form>
       </div>
-
-      {/* Input */}
-      <form onSubmit={handleSubmit} className="flex gap-3">
-        <input
-          id="ai-command-input"
-          ref={inputRef}
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Type a command... e.g. 'Create habit Morning Run'"
-          className="input-field flex-1"
-          disabled={processing}
-        />
-        <button
-          id="ai-submit-btn"
-          type="submit"
-          disabled={processing || !input.trim()}
-          className="btn-primary flex items-center gap-2"
-        >
-          <HiOutlinePaperAirplane className="w-4 h-4 rotate-90" />
-          Send
-        </button>
-      </form>
     </div>
   );
 }

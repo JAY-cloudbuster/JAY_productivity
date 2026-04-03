@@ -39,11 +39,11 @@ export default function App() {
 
       <main
         className={`transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] min-h-screen
-          ${sidebarCollapsed ? 'ml-[80px]' : 'ml-[280px]'}`}
+          ${sidebarCollapsed ? 'md:ml-[80px]' : 'md:ml-[280px]'} pt-16 md:pt-0`}
       >
-        <div className="p-8 md:p-12 max-w-[1400px] mx-auto min-h-screen flex flex-col relative z-10">
+        <div className="p-4 sm:p-8 md:p-12 max-w-[1400px] mx-auto min-h-screen flex flex-col relative z-10 w-full overflow-hidden">
           {/* Header Bar */}
-          <header className="flex items-center justify-between mb-12">
+          <header className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 md:mb-12 gap-4">
             <motion.div 
               initial={{ opacity: 0, y: -10 }} 
               animate={{ opacity: 1, y: 0 }}

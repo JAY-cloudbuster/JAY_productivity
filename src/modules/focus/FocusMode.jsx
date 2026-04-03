@@ -82,16 +82,16 @@ export default function FocusMode() {
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8">
+    <div className="flex flex-col lg:flex-row gap-6 md:gap-8 min-h-full">
       {/* Main Timer Area */}
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-        className="flex-1 glass-panel p-12 flex flex-col items-center justify-center min-h-[600px] relative overflow-hidden"
+        className="flex-1 glass-panel p-6 md:p-12 flex flex-col items-center justify-center min-h-[400px] md:min-h-[600px] relative overflow-hidden"
       >
         <div className="absolute inset-0 bg-gradient-to-b from-brand-500/5 to-transparent pointer-events-none" />
         
         {/* Presets */}
-        <div className="flex gap-3 mb-12 z-10">
+        <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-8 md:mb-12 z-10">
           {PRESETS.map(preset => (
             <button
               key={preset.label}
@@ -105,8 +105,8 @@ export default function FocusMode() {
         </div>
 
         {/* Circular Timer */}
-        <div className="relative flex items-center justify-center mb-12 group z-10">
-          <svg className="w-[320px] h-[320px] -rotate-90 transform">
+        <div className="relative flex items-center justify-center mb-8 md:mb-12 group z-10 w-[240px] h-[240px] md:w-[320px] md:h-[320px]">
+          <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 320 320">
             {/* Background Ring */}
             <circle
               cx="160" cy="160" r="120"
@@ -125,10 +125,12 @@ export default function FocusMode() {
           </svg>
           
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-7xl font-display font-bold text-white tracking-tighter drop-shadow-lg">
+            <span className="text-5xl md:text-7xl font-display font-bold text-white tracking-tighter drop-shadow-lg">
               {formatTime(timeLeft)}
             </span>
-            <span className="text-surface-400 font-medium uppercase tracking-widest mt-2">{isActive ? 'Focusing...' : 'Paused'}</span>
+            <span className="text-[10px] md:text-xs text-surface-400 font-medium uppercase tracking-widest mt-1 md:mt-2">
+              {isActive ? 'Focusing...' : 'Paused'}
+            </span>
           </div>
         </div>
 

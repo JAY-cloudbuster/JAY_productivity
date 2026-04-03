@@ -39,7 +39,7 @@
   }
 
   .interactive-card {
-    @apply glass-panel transition-all duration-300 hover:border-white/[0.15] hover:bg-white/[0.08] hover:shadow-glow-brand/10 hover:-translate-y-1;
+    @apply glass-panel transition-all duration-300 hover:border-white/[0.15] hover:bg-white/[0.08] hover:shadow-glow-brand hover:-translate-y-1;
   }
 
   /* Buttons */
@@ -59,7 +59,7 @@
   .neo-input {
     @apply w-full px-4 py-3 bg-surface-900/50 backdrop-blur-md border border-white/10 rounded-xl text-white font-medium
            placeholder:text-surface-500 transition-all duration-300
-           focus:outline-none focus:border-brand-500 focus:bg-surface-800/50 focus:ring-4 focus:ring-brand-500/20 focus:shadow-glow-brand/20;
+           focus:outline-none focus:border-brand-500 focus:bg-surface-800/50 focus:ring-4 focus:ring-brand-500/20 focus:shadow-glow-brand;
   }
   
   .neo-select {

@@ -46,11 +46,11 @@ export default function Notes() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-200px)] gap-6">
+    <div className="flex flex-col md:flex-row h-[calc(100vh-160px)] md:h-[calc(100vh-200px)] gap-4 md:gap-6">
       {/* Sidebar List */}
       <motion.div 
         initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-        className="w-1/3 glass-panel flex flex-col overflow-hidden"
+        className={`w-full md:w-1/3 glass-panel flex flex-col overflow-hidden ${activeNote ? 'hidden md:flex' : 'flex'}`}
       >
         <div className="p-4 border-b border-white/5 flex items-center justify-between">
           <h3 className="font-display font-bold text-white tracking-wide">My Notes</h3>
@@ -93,15 +93,23 @@ export default function Notes() {
       {/* Editor Area */}
       <motion.div 
         initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}
-        className="flex-1 glass-panel flex flex-col overflow-hidden relative"
+        className={`flex-1 glass-panel flex flex-col overflow-hidden relative ${!activeNote ? 'hidden md:flex' : 'flex'}`}
       >
         {activeNote ? (
           <>
-            <div className="p-4 border-b border-white/5 flex items-center justify-between bg-surface-900/30">
-              <span className="text-xs font-mono text-surface-500">ID: {activeNote.id.split('-')[0]}</span>
+            <div className="p-3 md:p-4 border-b border-white/5 flex items-center justify-between bg-surface-900/30">
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setActiveNote(null)} 
+                  className="md:hidden p-1.5 bg-surface-800 text-surface-300 rounded-lg hover:text-white"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
+                </button>
+                <span className="text-xs font-mono text-surface-500 hidden sm:inline">ID: {activeNote.id.split('-')[0]}</span>
+              </div>
               <span className="text-xs text-surface-400 flex items-center gap-2">
                 {isTyping ? (
-                   <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 bg-amber-400 animate-pulse rounded-full"></span> Unsaved changes</span>
+                   <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 bg-amber-400 animate-pulse rounded-full"></span> Unsaved</span>
                 ) : (
                    <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span> Saved</span>
                 )}
