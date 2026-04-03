@@ -156,6 +156,69 @@ app.delete('/api/tasks/:id', (req, res) => {
   }
 });
 
+// ─── NOTES ─────────────────────────────────────────────
+app.get('/api/notes', (req, res) => {
+  try {
+    const notes = queryAll('SELECT * FROM notes ORDER BY updated_at DESC');
+    res.json(notes);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/notes', (req, res) => {
+  try {
+    const { content } = req.body;
+    if (!content || !content.trim()) return res.status(400).json({ error: 'Content required' });
+    const id = uuidv4();
+    runSql('INSERT INTO notes (id, content) VALUES (?, ?)', [id, content.trim()]);
+    res.status(201).json(queryOne('SELECT * FROM notes WHERE id = ?', [id]));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.patch('/api/notes/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const { content } = req.body;
+    runSql("UPDATE notes SET content = ?, updated_at = datetime('now') WHERE id = ?", [content.trim(), id]);
+    res.json(queryOne('SELECT * FROM notes WHERE id = ?', [id]));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/notes/:id', (req, res) => {
+  try {
+    runSql('DELETE FROM notes WHERE id = ?', [req.params.id]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── FOCUS SESSIONS ────────────────────────────────────
+app.get('/api/focus', (req, res) => {
+  try {
+    const sessions = queryAll('SELECT * FROM focus_sessions ORDER BY completed_at DESC');
+    res.json(sessions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/focus', (req, res) => {
+  try {
+    const { duration } = req.body;
+    const id = uuidv4();
+    runSql('INSERT INTO focus_sessions (id, duration) VALUES (?, ?)', [id, duration]);
+    res.status(201).json(queryOne('SELECT * FROM focus_sessions WHERE id = ?', [id]));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ─── ANALYTICS ─────────────────────────────────────────
 app.get('/api/analytics', (req, res) => {
   try {

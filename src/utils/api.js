@@ -35,10 +35,18 @@ export const api = {
     request(`/tasks/${id}`, { method: 'PATCH', body: JSON.stringify(updates) }),
   deleteTask: (id) => request(`/tasks/${id}`, { method: 'DELETE' }),
 
-  // Analytics
-  getAnalytics: () => request('/analytics'),
+  // Notes
+  getNotes: () => request('/notes'),
+  createNote: (content) => request('/notes', { method: 'POST', body: JSON.stringify({ content }) }),
+  updateNote: (id, content) => request(`/notes/${id}`, { method: 'PATCH', body: JSON.stringify({ content }) }),
+  deleteNote: (id) => request(`/notes/${id}`, { method: 'DELETE' }),
 
-  // AI
+  // Focus
+  getFocusSessions: () => request('/focus'),
+  createFocusSession: (duration) => request('/focus', { method: 'POST', body: JSON.stringify({ duration }) }),
+
+  // Analytics & AI
+  getAnalytics: () => request('/analytics'),
   executeAIAction: (action, data) =>
     request('/ai/execute', { method: 'POST', body: JSON.stringify({ action, data }) }),
 };
