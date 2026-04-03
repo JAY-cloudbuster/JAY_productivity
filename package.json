@@ -20,7 +20,7 @@
     "react-hot-toast": "^2.4.1",
     "express": "^4.19.2",
     "cors": "^2.8.5",
-    "better-sqlite3": "^11.1.2",
+    "sql.js": "^1.10.3",
     "uuid": "^9.0.1",
     "openai": "^4.52.0",
     "concurrently": "^8.2.2",
