@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(99, 102, 241, 0.3) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.3);
+    border-radius: 3px;
+  }
+
+  ::selection {
+    background: rgba(92, 124, 250, 0.3);
+    color: white;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/[0.04] backdrop-blur-xl border border-white/[0.06] rounded-2xl;
+  }
+
+  .glass-card-hover {
+    @apply glass-card transition-all duration-300 hover:bg-white/[0.07] hover:border-white/[0.1] hover:shadow-lg hover:shadow-brand-500/5;
+  }
+
+  .btn-primary {
+    @apply px-4 py-2.5 bg-gradient-to-r from-brand-600 to-brand-500 text-white font-medium rounded-xl 
+           transition-all duration-200 hover:from-brand-500 hover:to-brand-400 hover:shadow-lg hover:shadow-brand-500/25
+           active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2.5 bg-white/[0.06] text-surface-300 font-medium rounded-xl border border-white/[0.08]
+           transition-all duration-200 hover:bg-white/[0.1] hover:text-white hover:border-white/[0.12]
+           active:scale-[0.98];
+  }
+
+  .btn-danger {
+    @apply px-3 py-1.5 bg-red-500/10 text-red-400 text-sm font-medium rounded-lg border border-red-500/20
+           transition-all duration-200 hover:bg-red-500/20 hover:border-red-500/30
+           active:scale-[0.98];
+  }
+
+  .btn-success {
+    @apply px-3 py-1.5 bg-emerald-500/10 text-emerald-400 text-sm font-medium rounded-lg border border-emerald-500/20
+           transition-all duration-200 hover:bg-emerald-500/20 hover:border-emerald-500/30
+           active:scale-[0.98];
+  }
+
+  .input-field {
+    @apply w-full px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white
+           placeholder-surface-500 transition-all duration-200
+           focus:outline-none focus:border-brand-500/50 focus:bg-white/[0.06] focus:ring-1 focus:ring-brand-500/20;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-high {
+    @apply badge bg-red-500/15 text-red-400 border border-red-500/20;
+  }
+
+  .badge-medium {
+    @apply badge bg-amber-500/15 text-amber-400 border border-amber-500/20;
+  }
+
+  .badge-low {
+    @apply badge bg-emerald-500/15 text-emerald-400 border border-emerald-500/20;
+  }
+
+  .stat-card {
+    @apply glass-card p-5 flex flex-col gap-1;
+  }
+
+  .nav-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl text-surface-400 font-medium
+           transition-all duration-200 cursor-pointer
+           hover:bg-white/[0.06] hover:text-white;
+  }
+
+  .nav-item-active {
+    @apply nav-item bg-brand-500/10 text-brand-400 border border-brand-500/15;
+  }
+}
